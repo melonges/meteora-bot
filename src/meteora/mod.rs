@@ -9,6 +9,7 @@ use solana_sdk::signature::Signature;
 use solana_sdk::transaction::VersionedTransaction;
 use solana_transaction_status::TransactionStatusMeta;
 use tracing::log::info;
+// 30 95 dc 82 3d 0b 09 b2
 pub const CREATE_IX_DISC: [u8; 8] = [0x30, 0x95, 0xdc, 0x82, 0x3d, 0x0b, 0x09, 0xb2];
 pub const IX_DISCRIMINATOR_SIZE: usize = 8;
 
@@ -66,9 +67,9 @@ impl MeteoraController {
 
                     let mut ix_data = &instruction.data[IX_DISCRIMINATOR_SIZE..];
 
-                    let create_ix_data: CreateIxData = BorshDeserialize::deserialize(&mut ix_data)?;
-
                     if ix_discriminator == CREATE_IX_DISC {
+
+                        let create_ix_data: CreateIxData = BorshDeserialize::deserialize(&mut ix_data)?;
                         info!("create ix: {:?}", create_ix_data);
 
                         let pool = instruction.accounts[0].pubkey;
