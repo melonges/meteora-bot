@@ -24,6 +24,8 @@ pub enum RpcType {
     #[default]
     SolanaRpc,
     Jito,
+    Bloxroute,
+    Nextblock,
 }
 #[derive(Clone, Debug, Deserialize)]
 pub struct RpcConfig {

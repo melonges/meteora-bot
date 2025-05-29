@@ -1,11 +1,13 @@
 use crate::config::{RpcConfig, RpcType};
+use crate::meteora::AccountsForBuy;
 use crate::tx_senders::jito::JitoTxSender;
 use crate::tx_senders::solana_rpc::GenericRpc;
+use crate::tx_senders::bloxroute::BloxrouteTxSender;
+use crate::tx_senders::nextblock::NextblockTxSender;
 use crate::tx_senders::transaction::TransactionConfig;
 use async_trait::async_trait;
 use reqwest::Client;
 use solana_sdk::hash::Hash;
-use solana_sdk::pubkey::Pubkey;
 use solana_sdk::signature::Signature;
 use std::sync::Arc;
 use tracing::info;
@@ -14,6 +16,8 @@ pub mod constants;
 pub mod jito;
 pub mod solana_rpc;
 pub mod transaction;
+pub mod bloxroute;
+pub mod nextblock;
 
 #[derive(Debug, Clone)]
 pub enum TxResult {
@@ -37,9 +41,7 @@ pub trait TxSender: Sync + Send {
         &self,
         index: u32,
         recent_blockhash: Hash,
-        token_address: Pubkey,
-        bonding_curve: Pubkey,
-        associated_bonding_curve: Pubkey,
+        accounts_for_buy: AccountsForBuy,
     ) -> anyhow::Result<TxResult>;
 }
 
@@ -57,6 +59,14 @@ pub fn create_tx_sender(
         }
         RpcType::Jito => {
             let tx_sender = JitoTxSender::new(name, rpc_config.url, tx_config, client);
+            Arc::new(tx_sender)
+        }
+        RpcType::Bloxroute => {
+            let tx_sender = BloxrouteTxSender::new(name, rpc_config.url, tx_config, client, rpc_config.auth.unwrap());
+            Arc::new(tx_sender)
+        }
+        RpcType::Nextblock => {
+            let tx_sender = NextblockTxSender::new(name, rpc_config.url, tx_config, client, rpc_config.auth.unwrap());
             Arc::new(tx_sender)
         }
     }

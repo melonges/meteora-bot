@@ -1,4 +1,5 @@
 use crate::config::RpcType;
+use crate::meteora::AccountsForBuy;
 use crate::tx_senders::transaction::{TransactionConfig, build_transaction_with_config};
 use crate::tx_senders::{TxResult, TxSender};
 use anyhow::Context;
@@ -7,7 +8,6 @@ use serde::Serialize;
 use solana_client::nonblocking::rpc_client::RpcClient;
 use solana_client::rpc_config::RpcSendTransactionConfig;
 use solana_sdk::hash::Hash;
-use solana_sdk::pubkey::Pubkey;
 use solana_transaction_status::UiTransactionEncoding;
 use std::sync::Arc;
 
@@ -53,17 +53,13 @@ impl TxSender for GenericRpc {
         &self,
         _index: u32,
         recent_blockhash: Hash,
-        token_address: Pubkey,
-        bonding_curve: Pubkey,
-        associated_bonding_curve: Pubkey,
+        accounts_for_buy: AccountsForBuy,
     ) -> anyhow::Result<TxResult> {
         let transaction = build_transaction_with_config(
             &self.tx_config,
             &self.rpc_type,
             recent_blockhash,
-            token_address,
-            bonding_curve,
-            associated_bonding_curve,
+            accounts_for_buy,
         );
         let sig = self
             .http_rpc

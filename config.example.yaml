@@ -5,6 +5,10 @@ rpc:
   "jito-rpc1":
     url: "https://ny.mainnet.block-engine.jito.wtf/api/v1/transactions"
     rpc_type: "jito"
+  "bloxroute-rpc1":
+    url: "https://ny.solana.dex.blxrbdn.com/api/v2/submit"
+    rpc_type: "bloxroute"
+    auth: ""
 
 geyser_url: "https://grpc.ny.shyft.to"
 geyser_x_token: ""

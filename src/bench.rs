@@ -1,10 +1,10 @@
 use crate::config::PingThingsArgs;
+use crate::meteora::AccountsForBuy;
 use crate::tx_senders::solana_rpc::TxMetrics;
 use crate::tx_senders::transaction::TransactionConfig;
 use crate::tx_senders::{TxSender, create_tx_sender};
 use reqwest::Client;
 use solana_sdk::hash::Hash;
-use solana_sdk::pubkey::Pubkey;
 use std::sync::Arc;
 use tracing::{error, info};
 
@@ -41,9 +41,7 @@ impl Bench {
         tx_index: u32,
         rpc_sender: Arc<dyn TxSender>,
         recent_blockhash: Hash,
-        token_address: Pubkey,
-        bonding_curve: Pubkey,
-        associated_bonding_curve: Pubkey,
+        accounts_for_buy: AccountsForBuy,
     ) -> anyhow::Result<()> {
         let start = tokio::time::Instant::now();
 
@@ -51,9 +49,7 @@ impl Bench {
             .send_transaction(
                 tx_index,
                 recent_blockhash,
-                token_address,
-                bonding_curve,
-                associated_bonding_curve,
+                accounts_for_buy,
             )
             .await?;
 
@@ -68,16 +64,12 @@ impl Bench {
     pub async fn send_buy_tx(
         self,
         recent_blockhash: Hash,
-        token_address: Pubkey,
-        bonding_curve: Pubkey,
-        associated_bonding_curve: Pubkey,
+        accounts_for_buy: AccountsForBuy,
     ) {
         tokio::select! {
             _ = self.send_buy_tx_inner(
                 recent_blockhash,
-                token_address,
-                bonding_curve,
-                associated_bonding_curve,
+                accounts_for_buy,
             ) => {}
         }
     }
@@ -85,9 +77,7 @@ impl Bench {
     async fn send_buy_tx_inner(
         self,
         recent_blockhash: Hash,
-        token_address: Pubkey,
-        bonding_curve: Pubkey,
-        associated_bonding_curve: Pubkey,
+        accounts_for_buy: AccountsForBuy,
     ) {
         let start = tokio::time::Instant::now();
         info!("starting create buy tx");
@@ -103,9 +93,7 @@ impl Bench {
                     index,
                     rpc_sender,
                     recent_blockhash,
-                    token_address,
-                    bonding_curve,
-                    associated_bonding_curve,
+                    accounts_for_buy,
                 )
                 .await
                 {

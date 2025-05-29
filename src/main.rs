@@ -1,7 +1,7 @@
 use crate::bench::Bench;
 use crate::config::PingThingsArgs;
 use crate::geyser::{GeyserResult, YellowstoneGrpcGeyser, YellowstoneGrpcGeyserClient};
-use crate::pumpfun::PumpFunController;
+use meteora::MeteoraController;
 use solana_sdk::pubkey;
 use solana_sdk::pubkey::Pubkey;
 use std::collections::{HashMap, HashSet};
@@ -17,7 +17,7 @@ mod bench;
 mod config;
 mod core;
 mod geyser;
-mod pumpfun;
+mod meteora;
 mod tx_senders;
 
 #[tokio::main]
@@ -32,8 +32,7 @@ pub async fn main() -> GeyserResult<()> {
     let config_controller: PingThingsArgs = PingThingsArgs::new();
     let bench_controller: Bench = Bench::new(config_controller.clone());
 
-    let pumpfun_controller: PumpFunController =
-        PumpFunController::new(config_controller.clone(), bench_controller.clone());
+    let meteora_controller  = MeteoraController::new(config_controller.clone(), bench_controller.clone());
 
     info!("starting with config {:?}", config_controller);
 
@@ -64,6 +63,6 @@ pub async fn main() -> GeyserResult<()> {
         Arc::new(RwLock::new(HashSet::new())),
     );
 
-    let _ = yellowstone_grpc.consume(pumpfun_controller).await;
+    let _ = yellowstone_grpc.consume(meteora_controller).await;
     Ok(())
 }
