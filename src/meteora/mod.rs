@@ -9,7 +9,6 @@ use solana_sdk::signature::Signature;
 use solana_sdk::transaction::VersionedTransaction;
 use solana_transaction_status::TransactionStatusMeta;
 use tracing::log::info;
-
 pub const CREATE_IX_DISC: [u8; 8] = [0x30, 0x95, 0xdc, 0x82, 0x3d, 0x0b, 0x09, 0xb2];
 pub const IX_DISCRIMINATOR_SIZE: usize = 8;
 

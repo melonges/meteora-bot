@@ -62,11 +62,11 @@ pub fn create_tx_sender(
             Arc::new(tx_sender)
         }
         RpcType::Bloxroute => {
-            let tx_sender = BloxrouteTxSender::new(name, rpc_config.url, tx_config, client, rpc_config.auth.unwrap());
+            let tx_sender = BloxrouteTxSender::new(name, rpc_config.url, tx_config, client, rpc_config.auth.expect("failed to parse bloxroute auth key"));
             Arc::new(tx_sender)
         }
         RpcType::Nextblock => {
-            let tx_sender = NextblockTxSender::new(name, rpc_config.url, tx_config, client, rpc_config.auth.unwrap());
+            let tx_sender = NextblockTxSender::new(name, rpc_config.url, tx_config, client, rpc_config.auth.expect("failed to parse nextlock auth key"));
             Arc::new(tx_sender)
         }
     }

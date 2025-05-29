@@ -2,8 +2,6 @@ use crate::bench::Bench;
 use crate::config::PingThingsArgs;
 use crate::geyser::{GeyserResult, YellowstoneGrpcGeyser, YellowstoneGrpcGeyserClient};
 use meteora::MeteoraController;
-use solana_sdk::pubkey;
-use solana_sdk::pubkey::Pubkey;
 use tx_senders::constants::METEORA_POOLS_PROGRAM;
 use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
@@ -13,7 +11,6 @@ use yellowstone_grpc_proto::geyser::{
     CommitmentLevel, SubscribeRequestFilterAccounts, SubscribeRequestFilterTransactions,
 };
 
-pub const PUMPFUN_PROGRAM_ID: Pubkey = pubkey!("6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P");
 mod bench;
 mod config;
 mod core;
@@ -52,8 +49,7 @@ pub async fn main() -> GeyserResult<()> {
     };
 
     let mut transaction_filters: HashMap<String, SubscribeRequestFilterTransactions> = HashMap::new();
-
-    transaction_filters.insert("pumpfun_transaction_filter".to_string(), transaction_filter);
+    transaction_filters.insert("meteora_transaction_filter".to_string(), transaction_filter);
 
     let yellowstone_grpc = YellowstoneGrpcGeyserClient::new(
         config_controller.geyser_url,

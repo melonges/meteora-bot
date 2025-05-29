@@ -69,7 +69,9 @@ impl TxSender for NextblockTxSender {
         headers.insert("Content-Type", "application/json".parse().unwrap());
         headers.insert("Authorization", self.auth.parse().unwrap());
         let body = json!({
-            "transaction": format!("{{\"content\": {}}})", encoded_transaction),
+            "transaction": {
+                "content": encoded_transaction
+            },
         });
         debug!("sending tx: {}", body.to_string());
         let response = self.client.post(&self.url).headers(headers).json(&body).send().await?;

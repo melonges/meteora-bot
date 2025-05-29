@@ -68,8 +68,11 @@ impl TxSender for BloxrouteTxSender {
         let mut headers = HeaderMap::new();
         headers.insert("Authorization", self.auth.parse().unwrap());
         let body = json!({
-            "transaction": format!("{{\"content\": {}}})", encoded_transaction),
+            "transaction": {
+                "content": encoded_transaction
+            },
             "skipPreFlight": true,
+            "frontRunningProtection": true,
         });
         debug!("sending tx: {}", body.to_string());
         let response = self.client.post(&self.url).headers(headers).json(&body).send().await?;
@@ -80,7 +83,7 @@ impl TxSender for BloxrouteTxSender {
         }
         let parsed_resp = serde_json::from_str::<BloxrouteResponse>(&body).context("cannot deserialize signature")?;
         Ok(TxResult::Signature(
-            Signature::from_str(&parsed_resp.signature).unwrap(),
+            Signature::from_str(&parsed_resp.signature).expect("failed to parse signature"),
         ))
     }
 }
