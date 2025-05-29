@@ -4,6 +4,7 @@ use crate::geyser::{GeyserResult, YellowstoneGrpcGeyser, YellowstoneGrpcGeyserCl
 use meteora::MeteoraController;
 use solana_sdk::pubkey;
 use solana_sdk::pubkey::Pubkey;
+use tx_senders::constants::METEORA_POOLS_PROGRAM;
 use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 use tokio::sync::RwLock;
@@ -44,7 +45,7 @@ pub async fn main() -> GeyserResult<()> {
     let transaction_filter = SubscribeRequestFilterTransactions {
         vote: Some(false),
         failed: Some(false),
-        account_include: vec![PUMPFUN_PROGRAM_ID.to_string().clone()],
+        account_include: vec![METEORA_POOLS_PROGRAM.to_string()],
         account_exclude: vec![],
         account_required: vec![],
         signature: None,
