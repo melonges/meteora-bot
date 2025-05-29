@@ -45,13 +45,7 @@ impl Bench {
     ) -> anyhow::Result<()> {
         let start = tokio::time::Instant::now();
 
-        let _tx_result = rpc_sender
-            .send_transaction(
-                tx_index,
-                recent_blockhash,
-                accounts_for_buy,
-            )
-            .await?;
+        let _tx_result = rpc_sender.send_transaction(tx_index, recent_blockhash, accounts_for_buy).await?;
 
         info!(
             "complete rpc: {:?} {:?} ms",
@@ -61,11 +55,7 @@ impl Bench {
         Ok(())
     }
 
-    pub async fn send_buy_tx(
-        self,
-        recent_blockhash: Hash,
-        accounts_for_buy: AccountsForBuy,
-    ) {
+    pub async fn send_buy_tx(self, recent_blockhash: Hash, accounts_for_buy: AccountsForBuy) {
         tokio::select! {
             _ = self.send_buy_tx_inner(
                 recent_blockhash,
@@ -74,11 +64,7 @@ impl Bench {
         }
     }
 
-    async fn send_buy_tx_inner(
-        self,
-        recent_blockhash: Hash,
-        accounts_for_buy: AccountsForBuy,
-    ) {
+    async fn send_buy_tx_inner(self, recent_blockhash: Hash, accounts_for_buy: AccountsForBuy) {
         let start = tokio::time::Instant::now();
         info!("starting create buy tx");
         let mut tx_handles = Vec::new();
@@ -89,13 +75,8 @@ impl Bench {
             // let client = self.client.clone();
             let hdl = tokio::spawn(async move {
                 let index = 0;
-                if let Err(e) = Self::send_and_confirm_transaction(
-                    index,
-                    rpc_sender,
-                    recent_blockhash,
-                    accounts_for_buy,
-                )
-                .await
+                if let Err(e) =
+                    Self::send_and_confirm_transaction(index, rpc_sender, recent_blockhash, accounts_for_buy).await
                 {
                     error!("error end_and_confirm_transaction {:?}", e);
                 }

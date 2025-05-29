@@ -1,8 +1,6 @@
 use crate::config::{PingThingsArgs, RpcType};
 use crate::meteora::AccountsForBuy;
-use crate::tx_senders::constants::{
-    JITO_TIP, TOKEN_PROGRAM,
-};
+use crate::tx_senders::constants::{JITO_TIP, TOKEN_PROGRAM};
 use solana_sdk::compute_budget::ComputeBudgetInstruction;
 use solana_sdk::hash::Hash;
 use solana_sdk::instruction::{AccountMeta, Instruction};
@@ -106,8 +104,7 @@ pub fn build_transaction_with_config(
     let owner = tx_config.keypair.pubkey();
     let user_source_token = get_associated_token_address(&owner, &WSOL_MINT);
     let user_destination_token = get_associated_token_address(&owner, &a_token_mint);
-    let token_account_instruction =
-        create_associated_token_account(&owner, &owner, &a_token_mint, &TOKEN_PROGRAM);
+    let token_account_instruction = create_associated_token_account(&owner, &owner, &a_token_mint, &TOKEN_PROGRAM);
 
     instructions.push(token_account_instruction);
 

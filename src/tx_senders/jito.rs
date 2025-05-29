@@ -35,12 +35,7 @@ impl JitoTxSender {
         recent_blockhash: Hash,
         accounts_for_buy: AccountsForBuy,
     ) -> VersionedTransaction {
-        build_transaction_with_config(
-            &self.tx_config,
-            &RpcType::Jito,
-            recent_blockhash,
-            accounts_for_buy,
-        )
+        build_transaction_with_config(&self.tx_config, &RpcType::Jito, recent_blockhash, accounts_for_buy)
     }
 }
 
@@ -86,11 +81,7 @@ impl TxSender for JitoTxSender {
         recent_blockhash: Hash,
         accounts_for_buy: AccountsForBuy,
     ) -> anyhow::Result<TxResult> {
-        let tx = self.build_transaction_with_config(
-            index,
-            recent_blockhash,
-            accounts_for_buy,
-        );
+        let tx = self.build_transaction_with_config(index, recent_blockhash, accounts_for_buy);
         let tx_bytes = bincode::serialize(&tx).context("cannot serialize tx to bincode")?;
         let encoded_transaction = bs58::encode(tx_bytes).into_string();
         let body = json!({

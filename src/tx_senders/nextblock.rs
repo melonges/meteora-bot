@@ -6,20 +6,21 @@ use crate::tx_senders::transaction::{TransactionConfig, build_transaction_with_c
 use crate::tx_senders::{TxResult, TxSender};
 use anyhow::Context;
 use async_trait::async_trait;
-use reqwest::header::HeaderMap;
+use base64;
 use reqwest::Client;
+use reqwest::header::HeaderMap;
 use serde::Deserialize;
-use serde_json::{json};
+use serde_json::json;
 use solana_sdk::hash::Hash;
 use solana_sdk::signature::Signature;
 use solana_sdk::transaction::VersionedTransaction;
 use tracing::debug;
-use base64;
 
 pub struct NextblockTxSender {
     url: String,
     name: String,
     client: Client,
+    auth: String,
     tx_config: TransactionConfig,
 }
 
@@ -30,6 +31,7 @@ impl NextblockTxSender {
             name,
             tx_config,
             client,
+            auth,
         }
     }
 
@@ -39,21 +41,14 @@ impl NextblockTxSender {
         recent_blockhash: Hash,
         accounts_for_buy: AccountsForBuy,
     ) -> VersionedTransaction {
-        build_transaction_with_config(
-            &self.tx_config,
-            &RpcType::Jito,
-            recent_blockhash,
-            accounts_for_buy,
-        )
+        build_transaction_with_config(&self.tx_config, &RpcType::Jito, recent_blockhash, accounts_for_buy)
     }
 }
-
 
 #[derive(Deserialize)]
 pub struct NextblockResponse {
     pub signature: String,
 }
-
 
 #[async_trait]
 impl TxSender for NextblockTxSender {
@@ -67,16 +62,12 @@ impl TxSender for NextblockTxSender {
         recent_blockhash: Hash,
         accounts_for_buy: AccountsForBuy,
     ) -> anyhow::Result<TxResult> {
-        let tx = self.build_transaction_with_config(
-            index,
-            recent_blockhash,
-            accounts_for_buy,
-        );
+        let tx = self.build_transaction_with_config(index, recent_blockhash, accounts_for_buy);
         let tx_bytes = bincode::serialize(&tx).context("cannot serialize tx to bincode")?;
         let encoded_transaction = base64::encode(tx_bytes);
         let mut headers = HeaderMap::new();
         headers.insert("Content-Type", "application/json".parse().unwrap());
-        headers.insert("Authorization", "".parse().unwrap());
+        headers.insert("Authorization", self.auth.parse().unwrap());
         let body = json!({
             "transaction": format!("{{\"content\": {}}})", encoded_transaction),
         });
@@ -88,6 +79,8 @@ impl TxSender for NextblockTxSender {
             return Err(anyhow::anyhow!("failed to send tx: {}", body));
         }
         let parsed_resp = serde_json::from_str::<NextblockResponse>(&body).context("cannot deserialize signature")?;
-        Ok(TxResult::Signature(Signature::from_str(&parsed_resp.signature).unwrap()))
+        Ok(TxResult::Signature(
+            Signature::from_str(&parsed_resp.signature).unwrap(),
+        ))
     }
 }

@@ -55,21 +55,20 @@ impl TxSender for GenericRpc {
         recent_blockhash: Hash,
         accounts_for_buy: AccountsForBuy,
     ) -> anyhow::Result<TxResult> {
-        let transaction = build_transaction_with_config(
-            &self.tx_config,
-            &self.rpc_type,
-            recent_blockhash,
-            accounts_for_buy,
-        );
+        let transaction =
+            build_transaction_with_config(&self.tx_config, &self.rpc_type, recent_blockhash, accounts_for_buy);
         let sig = self
             .http_rpc
-            .send_transaction_with_config(&transaction, RpcSendTransactionConfig {
-                skip_preflight: true,
-                preflight_commitment: None,
-                encoding: Some(UiTransactionEncoding::Base64),
-                max_retries: None,
-                min_context_slot: None,
-            })
+            .send_transaction_with_config(
+                &transaction,
+                RpcSendTransactionConfig {
+                    skip_preflight: true,
+                    preflight_commitment: None,
+                    encoding: Some(UiTransactionEncoding::Base64),
+                    max_retries: None,
+                    min_context_slot: None,
+                },
+            )
             .await
             .context(format!("Failed to send transaction for {}", self.name))?;
         Ok(TxResult::Signature(sig))

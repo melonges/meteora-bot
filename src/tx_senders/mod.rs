@@ -1,9 +1,9 @@
 use crate::config::{RpcConfig, RpcType};
 use crate::meteora::AccountsForBuy;
-use crate::tx_senders::jito::JitoTxSender;
-use crate::tx_senders::solana_rpc::GenericRpc;
 use crate::tx_senders::bloxroute::BloxrouteTxSender;
+use crate::tx_senders::jito::JitoTxSender;
 use crate::tx_senders::nextblock::NextblockTxSender;
+use crate::tx_senders::solana_rpc::GenericRpc;
 use crate::tx_senders::transaction::TransactionConfig;
 use async_trait::async_trait;
 use reqwest::Client;
@@ -12,12 +12,12 @@ use solana_sdk::signature::Signature;
 use std::sync::Arc;
 use tracing::info;
 
+pub mod bloxroute;
 pub mod constants;
 pub mod jito;
+pub mod nextblock;
 pub mod solana_rpc;
 pub mod transaction;
-pub mod bloxroute;
-pub mod nextblock;
 
 #[derive(Debug, Clone)]
 pub enum TxResult {

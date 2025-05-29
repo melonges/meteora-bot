@@ -34,7 +34,6 @@ pub struct AccountsForBuy {
     pub protocol_token_fee: Pubkey,
 }
 
-
 pub struct MeteoraController {
     config: PingThingsArgs,
     bench: Bench,
@@ -89,19 +88,22 @@ impl MeteoraController {
                         self.is_buy = true;
                         self.bench
                             .clone()
-                            .send_buy_tx(recent_blockhash, AccountsForBuy {
-                                pool,
-                                a_token_mint,
-                                a_vault,
-                                b_vault,
-                                a_token_vault,
-                                b_token_vault,
-                                a_vault_lp_mint,
-                                b_vault_lp_mint,
-                                a_vault_lp,
-                                b_vault_lp,
-                                protocol_token_fee,
-                            })
+                            .send_buy_tx(
+                                recent_blockhash,
+                                AccountsForBuy {
+                                    pool,
+                                    a_token_mint,
+                                    a_vault,
+                                    b_vault,
+                                    a_token_vault,
+                                    b_token_vault,
+                                    a_vault_lp_mint,
+                                    b_vault_lp_mint,
+                                    a_vault_lp,
+                                    b_vault_lp,
+                                    protocol_token_fee,
+                                },
+                            )
                             .await;
                     }
                 }

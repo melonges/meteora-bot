@@ -32,7 +32,7 @@ pub async fn main() -> GeyserResult<()> {
     let config_controller: PingThingsArgs = PingThingsArgs::new();
     let bench_controller: Bench = Bench::new(config_controller.clone());
 
-    let meteora_controller  = MeteoraController::new(config_controller.clone(), bench_controller.clone());
+    let meteora_controller = MeteoraController::new(config_controller.clone(), bench_controller.clone());
 
     info!("starting with config {:?}", config_controller);
 
