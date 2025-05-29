@@ -9,6 +9,10 @@ rpc:
     url: "https://ny.solana.dex.blxrbdn.com/api/v2/submit"
     rpc_type: "bloxroute"
     auth: ""
+  "nextblock-rpc1":
+    url: "https://direct-ny.nextblock.io/api/v2/submit"
+    rpc_type: "bloxroute"
+    auth: ""
 
 geyser_url: "https://grpc.ny.shyft.to"
 geyser_x_token: ""
