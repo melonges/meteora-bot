@@ -1,5 +1,4 @@
 use crate::bench::Bench;
-use crate::config::PingThingsArgs;
 use crate::core::extract_instructions;
 use crate::tx_senders::constants::METEORA_POOLS_PROGRAM;
 use borsh::{BorshDeserialize, BorshSerialize};
@@ -35,16 +34,14 @@ pub struct AccountsForBuy {
 }
 
 pub struct MeteoraController {
-    config: PingThingsArgs,
     bench: Bench,
 
     is_buy: bool,
 }
 
 impl MeteoraController {
-    pub fn new(config: PingThingsArgs, bench: Bench) -> Self {
+    pub fn new(bench: Bench) -> Self {
         MeteoraController {
-            config,
             bench,
             is_buy: false,
         }

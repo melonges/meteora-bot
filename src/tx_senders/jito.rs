@@ -6,7 +6,7 @@ use anyhow::Context;
 use async_trait::async_trait;
 use reqwest::Client;
 use serde::Deserialize;
-use serde_json::{Value, json};
+use serde_json::{json};
 use solana_sdk::bs58;
 use solana_sdk::hash::Hash;
 use solana_sdk::transaction::VersionedTransaction;
@@ -37,30 +37,6 @@ impl JitoTxSender {
     ) -> VersionedTransaction {
         build_transaction_with_config(&self.tx_config, &RpcType::Jito, recent_blockhash, accounts_for_buy)
     }
-}
-
-#[derive(Deserialize)]
-pub struct JitoBundleStatusResponseInnerContext {
-    pub slot: u64,
-}
-
-#[derive(Deserialize)]
-pub struct JitoBundleStatusResponseInnerValue {
-    pub slot: u64,
-    pub bundle_id: String,
-    pub transactions: Vec<String>,
-    pub confirmation_status: String,
-    pub err: Value,
-}
-
-#[derive(Deserialize)]
-pub struct JitoBundleStatusResponseInner {
-    pub context: JitoBundleStatusResponseInnerContext,
-    pub value: Vec<JitoBundleStatusResponseInnerValue>,
-}
-#[derive(Deserialize)]
-pub struct JitoBundleStatusResponse {
-    pub result: JitoBundleStatusResponseInner,
 }
 
 #[derive(Deserialize)]

@@ -1,6 +1,5 @@
 use crate::config::PingThingsArgs;
 use crate::meteora::AccountsForBuy;
-use crate::tx_senders::solana_rpc::TxMetrics;
 use crate::tx_senders::transaction::TransactionConfig;
 use crate::tx_senders::{TxSender, create_tx_sender};
 use reqwest::Client;
@@ -10,15 +9,11 @@ use tracing::{error, info};
 
 #[derive(Clone)]
 pub struct Bench {
-    config: PingThingsArgs,
-    tx_subscribe_sender: tokio::sync::mpsc::Sender<TxMetrics>,
     rpcs: Vec<Arc<dyn TxSender>>,
-    client: Client,
 }
 
 impl Bench {
     pub fn new(config: PingThingsArgs) -> Self {
-        let (tx_subscribe_sender, _tx_subscribe_receiver) = tokio::sync::mpsc::channel(100);
         let tx_config: TransactionConfig = config.clone().into();
         let client = Client::new();
 
@@ -30,10 +25,7 @@ impl Bench {
             .collect::<Vec<Arc<dyn TxSender>>>();
 
         Bench {
-            config,
-            tx_subscribe_sender,
             rpcs,
-            client,
         }
     }
 
