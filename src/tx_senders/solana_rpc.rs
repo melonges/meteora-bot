@@ -56,7 +56,7 @@ impl TxSender for GenericRpc {
         accounts_for_buy: AccountsForBuy,
     ) -> anyhow::Result<TxResult> {
         let transaction =
-            build_transaction_with_config(&self.tx_config, &self.rpc_type, recent_blockhash, accounts_for_buy);
+            build_transaction_with_config(&self.tx_config, &self.rpc_type, recent_blockhash, accounts_for_buy)?;
         let sig = self
             .http_rpc
             .send_transaction_with_config(

@@ -40,8 +40,8 @@ impl NextblockTxSender {
         _index: u32,
         recent_blockhash: Hash,
         accounts_for_buy: AccountsForBuy,
-    ) -> VersionedTransaction {
-        build_transaction_with_config(&self.tx_config, &RpcType::Jito, recent_blockhash, accounts_for_buy)
+    ) -> anyhow::Result<VersionedTransaction> {
+        build_transaction_with_config(&self.tx_config, &RpcType::Nextblock, recent_blockhash, accounts_for_buy)
     }
 }
 
@@ -62,7 +62,7 @@ impl TxSender for NextblockTxSender {
         recent_blockhash: Hash,
         accounts_for_buy: AccountsForBuy,
     ) -> anyhow::Result<TxResult> {
-        let tx = self.build_transaction_with_config(index, recent_blockhash, accounts_for_buy);
+        let tx = self.build_transaction_with_config(index, recent_blockhash, accounts_for_buy)?;
         let tx_bytes = bincode::serialize(&tx).context("cannot serialize tx to bincode")?;
         let encoded_transaction = base64::encode(tx_bytes);
         let mut headers = HeaderMap::new();
@@ -73,16 +73,19 @@ impl TxSender for NextblockTxSender {
                 "content": encoded_transaction
             },
         });
-        debug!("sending tx: {}", body.to_string());
+        debug!("sending tx to nextblock: {}", body.to_string());
         let response = self.client.post(&self.url).headers(headers).json(&body).send().await?;
         let status = response.status();
-        let body = response.text().await?;
+        let response_body = response.text().await?;
+        debug!("nextblock response status: {}, body: {}", status, response_body);
         if !status.is_success() {
-            return Err(anyhow::anyhow!("failed to send tx: {}", body));
+            return Err(anyhow::anyhow!("nextblock failed to send tx (status: {}): {}", status, response_body));
         }
-        let parsed_resp = serde_json::from_str::<NextblockResponse>(&body).context("cannot deserialize signature")?;
+        let parsed_resp = serde_json::from_str::<NextblockResponse>(&response_body)
+            .context(format!("cannot deserialize nextblock response: {}", response_body))?;
         Ok(TxResult::Signature(
-            Signature::from_str(&parsed_resp.signature).unwrap(),
+            Signature::from_str(&parsed_resp.signature)
+                .context(format!("failed to parse signature: {}", parsed_resp.signature))?,
         ))
     }
 }

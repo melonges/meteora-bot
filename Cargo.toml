@@ -10,6 +10,7 @@ solana-sdk = "2"
 solana-transaction-status = "2"
 solana-client = "2"
 spl-associated-token-account = "6"
+spl-token = "6"
 yellowstone-grpc-client = { version = "6"}
 yellowstone-grpc-proto = { version = "6"}
 async-trait = "0.1"

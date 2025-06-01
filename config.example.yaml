@@ -11,7 +11,7 @@ rpc:
     auth: ""
   "nextblock-rpc1":
     url: "https://direct-ny.nextblock.io/api/v2/submit"
-    rpc_type: "bloxroute"
+    rpc_type: "nextblock"
     auth: ""
 
 geyser_url: "https://grpc.ny.shyft.to"

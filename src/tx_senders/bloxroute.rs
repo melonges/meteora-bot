@@ -40,8 +40,8 @@ impl BloxrouteTxSender {
         _index: u32,
         recent_blockhash: Hash,
         accounts_for_buy: AccountsForBuy,
-    ) -> VersionedTransaction {
-        build_transaction_with_config(&self.tx_config, &RpcType::Jito, recent_blockhash, accounts_for_buy)
+    ) -> anyhow::Result<VersionedTransaction> {
+        build_transaction_with_config(&self.tx_config, &RpcType::Bloxroute, recent_blockhash, accounts_for_buy)
     }
 }
 
@@ -62,10 +62,11 @@ impl TxSender for BloxrouteTxSender {
         recent_blockhash: Hash,
         accounts_for_buy: AccountsForBuy,
     ) -> anyhow::Result<TxResult> {
-        let tx = self.build_transaction_with_config(index, recent_blockhash, accounts_for_buy);
+        let tx = self.build_transaction_with_config(index, recent_blockhash, accounts_for_buy)?;
         let tx_bytes = bincode::serialize(&tx).context("cannot serialize tx to bincode")?;
         let encoded_transaction = base64::encode(tx_bytes);
         let mut headers = HeaderMap::new();
+        headers.insert("Content-Type", "application/json".parse().unwrap());
         headers.insert("Authorization", self.auth.parse().unwrap());
         let body = json!({
             "transaction": {
@@ -74,16 +75,19 @@ impl TxSender for BloxrouteTxSender {
             "skipPreFlight": true,
             "frontRunningProtection": true,
         });
-        debug!("sending tx: {}", body.to_string());
+        debug!("sending tx to bloxroute: {}", body.to_string());
         let response = self.client.post(&self.url).headers(headers).json(&body).send().await?;
         let status = response.status();
-        let body = response.text().await?;
+        let response_body = response.text().await?;
+        debug!("bloxroute response status: {}, body: {}", status, response_body);
         if !status.is_success() {
-            return Err(anyhow::anyhow!("failed to send tx: {}", body));
+            return Err(anyhow::anyhow!("bloxroute failed to send tx (status: {}): {}", status, response_body));
         }
-        let parsed_resp = serde_json::from_str::<BloxrouteResponse>(&body).context("cannot deserialize signature")?;
+        let parsed_resp = serde_json::from_str::<BloxrouteResponse>(&response_body)
+            .context(format!("cannot deserialize bloxroute response: {}", response_body))?;
         Ok(TxResult::Signature(
-            Signature::from_str(&parsed_resp.signature).expect("failed to parse signature"),
+            Signature::from_str(&parsed_resp.signature)
+                .context(format!("failed to parse signature: {}", parsed_resp.signature))?,
         ))
     }
 }

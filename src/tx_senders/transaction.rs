@@ -49,7 +49,7 @@ pub fn build_transaction_with_config(
     rpc_type: &RpcType,
     recent_blockhash: Hash,
     accounts_for_buy: AccountsForBuy,
-) -> VersionedTransaction {
+) -> anyhow::Result<VersionedTransaction> {
     let mut instructions = Vec::new();
 
     if tx_config.compute_unit_limit > 0 {
@@ -104,8 +104,21 @@ pub fn build_transaction_with_config(
     let owner = tx_config.keypair.pubkey();
     let user_source_token = get_associated_token_address(&owner, &WSOL_MINT);
     let user_destination_token = get_associated_token_address(&owner, &a_token_mint);
+    
+    // Create WSOL account if needed
+    let wsol_account_instruction = create_associated_token_account(&owner, &owner, &WSOL_MINT, &TOKEN_PROGRAM);
+    instructions.push(wsol_account_instruction);
+    
+    // Wrap SOL to WSOL by transferring SOL to the WSOL account
+    let wrap_sol_instruction = system_instruction::transfer(&owner, &user_source_token, tx_config.buy_amount);
+    instructions.push(wrap_sol_instruction);
+    
+    // Sync native instruction for WSOL to update the token balance
+    let sync_native_instruction = spl_token::instruction::sync_native(&TOKEN_PROGRAM, &user_source_token)?;
+    instructions.push(sync_native_instruction);
+    
+    // Create destination token account
     let token_account_instruction = create_associated_token_account(&owner, &owner, &a_token_mint, &TOKEN_PROGRAM);
-
     instructions.push(token_account_instruction);
 
     // Swap instruction data
@@ -141,9 +154,9 @@ pub fn build_transaction_with_config(
 
     instructions.push(swap_instruction);
 
-    let message_v0 = Message::try_compile(&owner, instructions.as_slice(), &[], recent_blockhash).unwrap();
+    let message_v0 = Message::try_compile(&owner, instructions.as_slice(), &[], recent_blockhash)?;
 
     let versioned_message = VersionedMessage::V0(message_v0);
 
-    VersionedTransaction::try_new(versioned_message, &[&tx_config.keypair]).unwrap()
+    Ok(VersionedTransaction::try_new(versioned_message, &[&tx_config.keypair])?)
 }
