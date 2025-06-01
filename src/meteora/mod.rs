@@ -80,7 +80,7 @@ impl MeteoraController {
                     let b_vault_lp_mint = instruction.accounts[10].pubkey;
                     let a_vault_lp = instruction.accounts[11].pubkey;
                     let b_vault_lp = instruction.accounts[12].pubkey;
-                    let protocol_token_fee = instruction.accounts[17].pubkey;
+                    let protocol_token_fee = instruction.accounts[16].pubkey; // user_source_token in swap
 
                     let recent_blockhash: Hash = *transaction.message.recent_blockhash();
                     self.is_buy = true;
