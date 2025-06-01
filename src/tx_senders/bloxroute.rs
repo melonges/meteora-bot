@@ -41,7 +41,7 @@ impl BloxrouteTxSender {
         recent_blockhash: Hash,
         accounts_for_buy: AccountsForBuy,
     ) -> VersionedTransaction {
-        build_transaction_with_config(&self.tx_config, &RpcType::Jito, recent_blockhash, accounts_for_buy)
+        build_transaction_with_config(&self.tx_config, &RpcType::Bloxroute, recent_blockhash, accounts_for_buy)
     }
 }
 
@@ -66,6 +66,7 @@ impl TxSender for BloxrouteTxSender {
         let tx_bytes = bincode::serialize(&tx).context("cannot serialize tx to bincode")?;
         let encoded_transaction = base64::encode(tx_bytes);
         let mut headers = HeaderMap::new();
+        headers.insert("Content-Type", "application/json".parse().unwrap());
         headers.insert("Authorization", self.auth.parse().unwrap());
         let body = json!({
             "transaction": {

@@ -41,7 +41,7 @@ impl NextblockTxSender {
         recent_blockhash: Hash,
         accounts_for_buy: AccountsForBuy,
     ) -> VersionedTransaction {
-        build_transaction_with_config(&self.tx_config, &RpcType::Jito, recent_blockhash, accounts_for_buy)
+        build_transaction_with_config(&self.tx_config, &RpcType::Bloxroute, recent_blockhash, accounts_for_buy)
     }
 }
 
