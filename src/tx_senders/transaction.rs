@@ -108,10 +108,8 @@ pub fn build_transaction_with_config(
 
     instructions.push(token_account_instruction);
 
-    // Swap instruction data
-    let buy: u64 = 0xf8c69e91e17587c8;
-    let mut data = vec![];
-    data.extend_from_slice(&buy.to_le_bytes());
+    // swap
+    let mut data = vec![0xf8, 0xc6, 0x9e, 0x91, 0xe1, 0x75, 0x87, 0xc8];
     data.extend_from_slice(&tx_config.min_amount_out.to_le_bytes());
     data.extend_from_slice(&tx_config.buy_amount.to_le_bytes());
 
