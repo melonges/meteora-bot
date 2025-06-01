@@ -6,7 +6,7 @@ use anyhow::Context;
 use async_trait::async_trait;
 use reqwest::Client;
 use serde::Deserialize;
-use serde_json::{json};
+use serde_json::json;
 use solana_sdk::bs58;
 use solana_sdk::hash::Hash;
 use solana_sdk::transaction::VersionedTransaction;

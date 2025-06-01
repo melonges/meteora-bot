@@ -2,11 +2,11 @@ use crate::bench::Bench;
 use crate::config::PingThingsArgs;
 use crate::geyser::{GeyserResult, YellowstoneGrpcGeyser, YellowstoneGrpcGeyserClient};
 use meteora::MeteoraController;
-use tx_senders::constants::METEORA_POOLS_PROGRAM;
 use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 use tokio::sync::RwLock;
 use tracing::info;
+use tx_senders::constants::METEORA_POOLS_PROGRAM;
 use yellowstone_grpc_proto::geyser::{
     CommitmentLevel, SubscribeRequestFilterAccounts, SubscribeRequestFilterTransactions,
 };

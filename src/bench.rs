@@ -24,9 +24,7 @@ impl Bench {
             .map(|(name, rpc)| create_tx_sender(name, rpc, tx_config.clone(), client.clone()))
             .collect::<Vec<Arc<dyn TxSender>>>();
 
-        Bench {
-            rpcs,
-        }
+        Bench { rpcs }
     }
 
     pub async fn send_and_confirm_transaction(
