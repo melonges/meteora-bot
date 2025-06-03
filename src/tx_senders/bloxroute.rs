@@ -72,8 +72,6 @@ impl TxSender for BloxrouteTxSender {
             "transaction": {
                 "content": encoded_transaction
             },
-            "skipPreFlight": true,
-            "frontRunningProtection": true,
         });
         debug!("sending tx: {}", body.to_string());
         let response = self.client.post(&self.url).headers(headers).json(&body).send().await?;
