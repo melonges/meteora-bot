@@ -110,8 +110,8 @@ pub fn build_transaction_with_config(
 
     // swap
     let mut data = vec![0xf8, 0xc6, 0x9e, 0x91, 0xe1, 0x75, 0x87, 0xc8];
-    data.extend_from_slice(&tx_config.min_amount_out.to_le_bytes());
     data.extend_from_slice(&tx_config.buy_amount.to_le_bytes());
+    data.extend_from_slice(&tx_config.min_amount_out.to_le_bytes());
 
     let accounts = vec![
         AccountMeta::new(pool, false),
