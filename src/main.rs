@@ -2,7 +2,9 @@ use crate::bench::Bench;
 use crate::config::PingThingsArgs;
 use crate::geyser::{GeyserResult, YellowstoneGrpcGeyser, YellowstoneGrpcGeyserClient};
 use meteora::MeteoraController;
+use solana_sdk::pubkey::Pubkey;
 use std::collections::{HashMap, HashSet};
+use std::str::FromStr;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 use tracing::info;
@@ -30,7 +32,9 @@ pub async fn main() -> GeyserResult<()> {
     let config_controller: PingThingsArgs = PingThingsArgs::new();
     let bench_controller: Bench = Bench::new(config_controller.clone());
 
-    let meteora_controller = MeteoraController::new(bench_controller.clone());
+    let buy_mint_filter = config_controller.buy_token_mint.as_deref().and_then(|mint| Pubkey::from_str(mint).ok());
+
+    let meteora_controller = MeteoraController::new(bench_controller.clone(), buy_mint_filter);
 
     info!("starting with config {:?}", config_controller);
 
