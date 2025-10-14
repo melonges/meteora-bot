@@ -14,6 +14,8 @@ pub struct PingThingsArgs {
     pub tip: f64,
     pub buy_amount: f64,
     pub min_amount_out: f64,
+    #[serde(default)]
+    pub buy_token_mint: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Default, Clone)]

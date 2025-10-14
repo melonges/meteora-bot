@@ -36,11 +36,16 @@ pub struct MeteoraController {
     bench: Bench,
 
     is_buy: bool,
+    buy_mint_filter: Option<Pubkey>,
 }
 
 impl MeteoraController {
-    pub fn new(bench: Bench) -> Self {
-        MeteoraController { bench, is_buy: false }
+    pub fn new(bench: Bench, buy_mint_filter: Option<Pubkey>) -> Self {
+        MeteoraController {
+            bench,
+            is_buy: false,
+            buy_mint_filter,
+        }
     }
 
     pub async fn transaction_handler(
@@ -65,10 +70,15 @@ impl MeteoraController {
                     let a_token_mint = instruction.accounts[3].pubkey;
                     let b_token_mint = instruction.accounts[4].pubkey;
 
-
                     //TODO: sort A/B tokens
-                    if  b_token_mint != WSOL_MINT {
+                    if b_token_mint != WSOL_MINT {
                         continue;
+                    }
+
+                    if let Some(filter_mint) = self.buy_mint_filter {
+                        if a_token_mint != filter_mint {
+                            continue;
+                        }
                     }
 
                     let pool = instruction.accounts[0].pubkey;
@@ -86,22 +96,19 @@ impl MeteoraController {
                     self.is_buy = true;
                     self.bench
                         .clone()
-                        .send_buy_tx(
-                            recent_blockhash,
-                                AccountsForBuy {
-                                    pool,
-                                    a_token_mint,
-                                    a_vault,
-                                    b_vault,
-                                    a_token_vault,
-                                    b_token_vault,
-                                    a_vault_lp_mint,
-                                    b_vault_lp_mint,
-                                    a_vault_lp,
-                                    b_vault_lp,
-                                    protocol_token_fee,
-                                },
-                        )
+                        .send_buy_tx(recent_blockhash, AccountsForBuy {
+                            pool,
+                            a_token_mint,
+                            a_vault,
+                            b_vault,
+                            a_token_vault,
+                            b_token_vault,
+                            a_vault_lp_mint,
+                            b_vault_lp_mint,
+                            a_vault_lp,
+                            b_vault_lp,
+                            protocol_token_fee,
+                        })
                         .await;
                 }
             }
